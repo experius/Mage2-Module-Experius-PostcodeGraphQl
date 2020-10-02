@@ -1,0 +1,26 @@
+{
+    "name": "experius/module-postcodegraphql",
+    "description": "Magento 2 Postcode.nl Api lookup module",
+    "authors": [
+        {
+            "email": "rene@experius.nl",
+            "name": "Rene Schep"
+        }
+    ],
+    "license": [
+        "OSL-3.0"
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "magento/framework": ">=102.0.0",
+        "experius/module-postcode": ">=1.5.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Experius\\PostcodeGraphQl\\": ""
+        }
+    }
+}
