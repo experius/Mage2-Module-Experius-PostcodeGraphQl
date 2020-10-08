@@ -3,7 +3,7 @@ type Query {
         postcode: String @doc(description: "Postcode")
         houseNumber: String @doc(description: "Housenumber")
         houseNumberAddition: String @doc(description: "Housenumber Addition")
-    ): postCodeAddress @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode") @doc(description: "Returns Json Encoded AddressInfo") @cache(cacheIdentity: "Experius\\Postcode\\Model\\Resolver\\Postcode\\Identity")
+    ): postCodeAddress @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode") @doc(description: "Returns Json Encoded AddressInfo") @cache(cacheIdentity: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode\\Identity")
 }
 
 type postCodeAddress {
