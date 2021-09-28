@@ -1,3 +1,10 @@
+## 2.0.1 (2021-09-28)
+
+[View Release](git@github.com:experius/Mage2-Module-Experius-PostcodeGraphQl.git/commits/tag/2.0.1)
+
+*  [FEATURE][SEL-549] Updated composer require *(René Schep)*
+
+
 ## 2.0.0 (2021-09-28)
 
 [View Release](git@github.com:experius/Mage2-Module-Experius-PostcodeGraphQl.git/commits/tag/2.0.0)

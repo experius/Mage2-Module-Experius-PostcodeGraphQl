@@ -13,7 +13,7 @@
     "minimum-stability": "dev",
     "require": {
         "magento/framework": ">=102.0.0",
-        "experius/module-postcode": ">=1.5.0"
+        "postcode-nl/api-magento2-module": ">=3.1.1"
     },
     "autoload": {
         "files": [
