@@ -1,12 +1,21 @@
 type Query {
     postcode (
-        postcode: String @doc(description: "Postcode")
-        houseNumber: String @doc(description: "Housenumber")
+        postcode: String! @doc(description: "Postcode")
+        houseNumber: String! @doc(description: "Housenumber")
         houseNumberAddition: String @doc(description: "Housenumber Addition")
-    ): postCodeAddress @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode") @doc(description: "Returns Json Encoded AddressInfo") @cache(cacheIdentity: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode\\Identity")
+    ): PostCodeAddress @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode") @doc(description: "Returns Json Encoded AddressInfo") @cache(cacheIdentity: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Postcode\\Identity")
+    autocomplete (
+        countryId: String! @doc(description: "country code ISO-2")
+        searchTerm: String! @doc(description: "Search term")
+        xAutocompleteSession: String @doc(description: "Autocomplete Session")
+    ): AutocompleteMatches @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\Autocomplete") @doc(description: "Returns Json Encoded Autocomplete suggestions")
+    addressDetails (
+        context: String! @doc(description: "context string from autocomplete")
+        xAutocompleteSession: String @doc(description: "Autocomplete Session")
+    ): AddressDetails @resolver(class: "Experius\\PostcodeGraphQl\\Model\\Resolver\\AddressDetails") @doc(description: "Returns Json Encoded Autocomplete suggestions")
 }
 
-type postCodeAddress {
+type PostCodeAddress {
     street: String @doc(description: "Street name in accordance with \"BAG (Basisregistraties adressen en gebouwen)\". In capital and lowercase letters, including punctuation marks and accents. This field is at most 80 characters in length. Filled with \"Postbus\" in case it is a range of PO boxes.")
     houseNumber: Int @doc(description: "House number of a perceel. In case of a Postbus match the house number will always be 0. Range: 0-99999")
     houseNumberAddition: String @doc(description: "Addition of the house number to uniquely define a location. These additions are officially recognized by the municipality. This field is at most 6 characters in length and null if addition not found (see houseNumberAdditions result field).")
@@ -24,4 +33,52 @@ type postCodeAddress {
     purposes: [String] @doc(description: "List of all purposes (Dutch: \"gebruiksdoelen\"). Null or an array of text values. (https://api.postcode.nl/documentation/Documentation/postcodeNlTypes for possible values)")
     surfaceArea: Int @doc(description: "Surface in square meters. Null for PO Boxes.")
     houseNumberAdditions: [String] @doc(description: "List of all house number additions having the postcode and houseNumber which was input.")
+}
+
+type AutocompleteMatches {
+    matches: [AutocompleteMatch]
+    xAutocompleteSession: String
+}
+
+type AutocompleteMatch {
+    value: String
+    label: String
+    description: String
+    precision: String
+    context: String
+    highlights: [Highlight]
+}
+
+type Highlight {
+    start: Int
+    end: Int
+}
+
+type AddressDetails {
+    language: String
+    address: AddressDetailsAddress
+    mailLines: [String]
+    location: AddressDetailsLocation
+    country: AddressDetailsCountry
+    xAutocompleteSession: String
+}
+
+type AddressDetailsAddress {
+    country: String
+    locality: String
+    street: String
+    postcode: String
+    building: String
+    buildingNumber: Int
+    buildingNumberAddition: String
+}
+
+type AddressDetailsLocation {
+    longitude: Float
+    latitude: Float
+}
+
+type AddressDetailsCountry {
+    name: String
+    iso3Code: String
 }

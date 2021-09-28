@@ -19,17 +19,14 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 
-class Postcode implements ResolverInterface
+class AddressDetails implements ResolverInterface
 {
-
-    /**
-     * @var PostcodeApiClient
-     */
+    
     protected $postcodeHelper;
 
     /**
      * PostcodeManagement constructor.
-     * @param PostcodeApiClient $postcodeHelper
+     * @param Settings $helper
      */
     public function __construct(
         Settings $helper
@@ -45,25 +42,16 @@ class Postcode implements ResolverInterface
      */
     public function resolve(
         Field $field,
-        $context,
+              $context,
         ResolveInfo $info,
         array $value = null,
         array $args = null
     ) {
-        if (!isset($args['postcode']) || !$args['postcode']) {
-            throw new GraphQlInputException(__('"postcode" should be specified'));
-        }
-        if (!isset($args['houseNumber']) || !$args['houseNumber']) {
-            throw new GraphQlInputException(__('"houseNumber" should be specified'));
-        }
-        if (!isset($args['houseNumberAddition']) || !$args['houseNumberAddition']) {
-            $args['houseNumberAddition'] = '';
-        }
 
-        $result = $this->postcodeHelper->dutchAddressByPostcode($args['postcode'], $args['houseNumber'], $args['houseNumberAddition']);
-        if (isset($result['message'])) {
-            throw new GraphQlInputException($result['message']);
+        if (!isset($args['context']) || !$args['context']) {
+            throw new GraphQlInputException(__('"context" should be specified'));
         }
+        $result = $this->postcodeHelper->internationalGetDetails($args['context']);
         return $result;
     }
 }

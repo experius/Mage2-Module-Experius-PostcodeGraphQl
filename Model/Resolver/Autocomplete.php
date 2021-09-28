@@ -13,13 +13,14 @@
 namespace Experius\PostcodeGraphQl\Model\Resolver;
 
 use Experius\Core\Helper\Settings;
+use Flekto\Postcode\Helper\CountryCodeConvertorHelper;
 use Flekto\Postcode\Helper\PostcodeApiClient;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 
-class Postcode implements ResolverInterface
+class Autocomplete implements ResolverInterface
 {
 
     /**
@@ -29,7 +30,7 @@ class Postcode implements ResolverInterface
 
     /**
      * PostcodeManagement constructor.
-     * @param PostcodeApiClient $postcodeHelper
+     * @param Settings $helper
      */
     public function __construct(
         Settings $helper
@@ -45,24 +46,34 @@ class Postcode implements ResolverInterface
      */
     public function resolve(
         Field $field,
-        $context,
+              $context,
         ResolveInfo $info,
         array $value = null,
         array $args = null
     ) {
-        if (!isset($args['postcode']) || !$args['postcode']) {
-            throw new GraphQlInputException(__('"postcode" should be specified'));
+        if (!isset($args['countryId']) || !$args['countryId']) {
+            throw new GraphQlInputException(__('"countryId" should be specified'));
         }
-        if (!isset($args['houseNumber']) || !$args['houseNumber']) {
-            throw new GraphQlInputException(__('"houseNumber" should be specified'));
+        if (!isset($args['searchTerm']) || !$args['searchTerm']) {
+            throw new GraphQlInputException(__('"searchTerm" should be specified'));
         }
-        if (!isset($args['houseNumberAddition']) || !$args['houseNumberAddition']) {
-            $args['houseNumberAddition'] = '';
+        $countryId = CountryCodeConvertorHelper::alpha2ToAlpha3($args['countryId']);
+        if(!isset($args['xAutocompleteSession'])) {
+            $session = bin2hex(random_bytes(8));
+        } else {
+            $session = $args['xAutocompleteSession'];
         }
 
-        $result = $this->postcodeHelper->dutchAddressByPostcode($args['postcode'], $args['houseNumber'], $args['houseNumberAddition']);
-        if (isset($result['message'])) {
-            throw new GraphQlInputException($result['message']);
+        $result = $this->postcodeHelper->internationalAutocomplete($countryId, $args['searchTerm'], null, 'en-US');
+        if (isset($result['matches'])) {
+            foreach($result['matches'] as &$match) {
+                if(isset($match['highlights'])) {
+                    foreach($match['highlights'] as &$highlight) {
+                        $highlight['start'] = $highlight[0];
+                        $highlight['end'] = $highlight[1];
+                    }
+                }
+            }
         }
         return $result;
     }
