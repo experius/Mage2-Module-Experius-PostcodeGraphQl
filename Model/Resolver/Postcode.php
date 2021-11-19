@@ -13,6 +13,7 @@
 namespace Experius\PostcodeGraphQl\Model\Resolver;
 
 use Experius\Core\Helper\Settings;
+use Flekto\Postcode\Helper\Exception\ClientException;
 use Flekto\Postcode\Helper\PostcodeApiClient;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
@@ -60,10 +61,12 @@ class Postcode implements ResolverInterface
             $args['houseNumberAddition'] = '';
         }
 
-        $result = $this->postcodeHelper->dutchAddressByPostcode($args['postcode'], $args['houseNumber'], $args['houseNumberAddition']);
-        if (isset($result['message'])) {
-            throw new GraphQlInputException($result['message']);
+        try {
+            $result = $this->postcodeHelper->dutchAddressByPostcode($args['postcode'], $args['houseNumber'], $args['houseNumberAddition']);
+        } catch (ClientException $e) {
+            throw new GraphQlInputException(__($e->getMessage()));
         }
+
         return $result;
     }
 }
