@@ -1,3 +1,10 @@
+## 2.0.2 (2021-11-19)
+
+[View Release](git@github.com:experius/Mage2-Module-Experius-PostcodeGraphQl.git/commits/tag/2.0.2)
+
+*  [BUGFIX][SEL-643] Catch postcode errors instead of serving server errors *(Matthijs Breed)*
+
+
 ## 2.0.1 (2021-09-28)
 
 [View Release](git@github.com:experius/Mage2-Module-Experius-PostcodeGraphQl.git/commits/tag/2.0.1)
