@@ -12,13 +12,14 @@
 
 namespace Experius\PostcodeGraphQl\Model\Resolver;
 
-use Experius\Core\Helper\Settings;
-use Flekto\Postcode\Helper\CountryCodeConvertorHelper;
-use Flekto\Postcode\Helper\PostcodeApiClient;
+use Flekto\Postcode\Helper\StoreConfigHelper;
+use Flekto\Postcode\Service\PostcodeApiClient;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
+use Magento\Directory\Api\CountryInformationAcquirerInterface;
+use Magento\Directory\Api\Data\CountryInformationInterface;
 
 class Autocomplete implements ResolverInterface
 {
@@ -29,16 +30,23 @@ class Autocomplete implements ResolverInterface
     protected $postcodeHelper;
 
     /**
+     * @var CountryInformationAcquirerInterface
+     */
+    protected $countryInterface;
+
+    /**
      * PostcodeManagement constructor.
      * @param Settings $helper
      */
     public function __construct(
-        Settings $helper
+        StoreConfigHelper $helper,
+        CountryInformationAcquirerInterface $countryInterface
     ) {
         $this->postcodeHelper = new PostcodeApiClient(
-            $helper->getConfigValue('postcodenl_api/general/api_key'),
-            $helper->getConfigValue('postcodenl_api/general/api_secret')
+            $helper->getValue(StoreConfigHelper::PATH['api_key']),
+            $helper->getValue(StoreConfigHelper::PATH['api_secret'])
         );
+        $this->countryInterface = $countryInterface;
     }
 
     /**
@@ -57,7 +65,7 @@ class Autocomplete implements ResolverInterface
         if (!isset($args['searchTerm']) || !$args['searchTerm']) {
             throw new GraphQlInputException(__('"searchTerm" should be specified'));
         }
-        $countryId = CountryCodeConvertorHelper::alpha2ToAlpha3($args['countryId']);
+        $countryId = $this->iso2ToIso3Code($args['countryId']);
         if(!isset($args['xAutocompleteSession'])) {
             $session = bin2hex(random_bytes(8));
         } else {
@@ -76,5 +84,24 @@ class Autocomplete implements ResolverInterface
             }
         }
         return $result;
+    }
+
+    /**
+     * @param string $countryId
+     * @return string
+     */
+    private function iso2ToIso3Code($countryId)
+    {
+        try {
+            /**
+             * @var CountryInformationInterface $countryInformation
+             */
+            $countryInformation = $this->countryInterface->getCountryInfo($countryId);
+
+            return strtolower($countryInformation->getThreeLetterAbbreviation());
+        } catch (\Exception $e) {
+
+        }
+        return $countryId;
     }
 }
