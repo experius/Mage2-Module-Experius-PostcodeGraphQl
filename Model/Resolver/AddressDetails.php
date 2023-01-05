@@ -12,8 +12,8 @@
 
 namespace Experius\PostcodeGraphQl\Model\Resolver;
 
-use Experius\Core\Helper\Settings;
-use Flekto\Postcode\Helper\PostcodeApiClient;
+use Flekto\Postcode\Helper\StoreConfigHelper;
+use Flekto\Postcode\Service\PostcodeApiClient;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
@@ -29,11 +29,11 @@ class AddressDetails implements ResolverInterface
      * @param Settings $helper
      */
     public function __construct(
-        Settings $helper
+        StoreConfigHelper $helper
     ) {
         $this->postcodeHelper = new PostcodeApiClient(
-            $helper->getConfigValue('postcodenl_api/general/api_key'),
-            $helper->getConfigValue('postcodenl_api/general/api_secret')
+            $helper->getValue(StoreConfigHelper::PATH['api_key']),
+            $helper->getValue(StoreConfigHelper::PATH['api_secret'])
         );
     }
 
