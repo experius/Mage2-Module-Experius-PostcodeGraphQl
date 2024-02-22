@@ -29,12 +29,9 @@ class AddressDetails implements ResolverInterface
      * @param Settings $helper
      */
     public function __construct(
-        StoreConfigHelper $helper
+	PostcodeApiClient $postcodeHelper
     ) {
-        $this->postcodeHelper = new PostcodeApiClient(
-            $helper->getValue(StoreConfigHelper::PATH['api_key']),
-            $helper->getValue(StoreConfigHelper::PATH['api_secret'])
-        );
+	$this->postcodeHelper = $postcodeHelper;
     }
 
     /**
